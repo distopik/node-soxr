@@ -23,10 +23,27 @@
 using namespace v8;
 using namespace node;
 
+
 namespace nodesox {
+
+    NAN_METHOD(soxbind_get_version) {
+        sox_version_info_t const* ver = sox_version_info();
+        Local<Array> ret = Nan::New<Array>();
+
+        // printf("sox_version_info_t: %p\n", ver);
+        // printf("going to take ver->version: %s\n", ver->version);
+        Nan::Set(ret, 0, Nan::New<String>(ver->version).ToLocalChecked());
+        // printf("going to take ver->time: %s\n", ver->time);
+        Nan::Set(ret, 1, Nan::New<String>(ver->time).ToLocalChecked());
+
+        info.GetReturnValue().Set(ret);
+    }
+
     void Initialize(Handle<Object> target) {
-      Nan::HandleScope scope;
+        Nan::HandleScope scope;
 
-
+        Nan::SetMethod(target, "soxbind_get_version", soxbind_get_version);
     }
 }
+
+NODE_MODULE(bindings, nodesox::Initialize);
