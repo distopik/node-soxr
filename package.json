@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/distopik/node-sox/issues"
   },
-  "homepage": "https://github.com/distopik/node-sox#readme"
+  "homepage": "https://github.com/distopik/node-sox#readme",
+  "dependencies": {
+    "nan": "^2.4.0"
+  }
 }
