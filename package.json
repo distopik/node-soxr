@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/distopik/node-sox#readme",
   "dependencies": {
+    "bindings": "^1.2.1",
     "nan": "^2.4.0"
   }
 }

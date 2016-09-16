@@ -18,6 +18,8 @@
 #include <node.h>
 #include "nan.h"
 
+#include <sox.h>
+
 using namespace v8;
 using namespace node;
 
@@ -25,6 +27,6 @@ namespace nodesox {
     void Initialize(Handle<Object> target) {
       Nan::HandleScope scope;
 
-      
+
     }
 }
