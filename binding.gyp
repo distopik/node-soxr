@@ -10,6 +10,9 @@
       ],
       'dependencies': [
       ],
+      'libraries': [
+        '-lsox'
+      ],
       'conditions':[
         ['OS=="win"', {
             'defines':[
