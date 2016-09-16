@@ -12,9 +12,9 @@
       ],
       'conditions':[
         ['OS=="win"', {
-        'defines':[
-          'NOMINMAX'
-        ]
+            'defines':[
+              'NOMINMAX'
+            ]
         }]
       ]
     }
