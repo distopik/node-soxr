@@ -30,9 +30,11 @@ namespace nodesox {
         sox_version_info_t const* ver = sox_version_info();
         Local<Array> ret = Nan::New<Array>();
 
+        // printf("sox_version_info_t: %p\n", ver);
+        // printf("going to take ver->version: %s\n", ver->version);
         Nan::Set(ret, 0, Nan::New<String>(ver->version).ToLocalChecked());
+        // printf("going to take ver->time: %s\n", ver->time);
         Nan::Set(ret, 1, Nan::New<String>(ver->time).ToLocalChecked());
-        Nan::Set(ret, 2, Nan::New<String>(ver->distro).ToLocalChecked());
 
         info.GetReturnValue().Set(ret);
     }
