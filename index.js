@@ -1,49 +1,42 @@
-const {Transform} = require('stream')
+const native = require('bindings')('bindings')
 
-class DecoderStream extends Transform {
-  transform(chunk, encoding, callback) {
-    // 1.) guess which format is at input
-    this.emit('format', {
-      bits: 16, rate: 44100, endianness: 'little', channels: 2
-    })
-    // 2.) decode into 64-bit doubles
-  }
+exports.quality = {
+  quick:    'quick',
+  low:      'low',
+  medium:   'medium',
+  high:     'high',
+  veryHigh: 'veryHigh'
 }
 
-class EncoderStream extends Transform {
-  constructor({format = 'wav', bits = 24, rate = 44100, endianess = 'little', floating = false, channels = 2}) {
-    this.format = format
-    this.bits   = bits
-    this.rate   = rate
-  }
+exports.phase = {
+  linear:       'linear',
+  intermediate: 'intermediate',
+  minimum:      'minimum',
+  steepFilter:  'steepFilter'
 }
 
-class ResampleStream extends Transform {
-  constructor({sourceRate, destRate}) {
-    this.sourceRate = sourceRate
-    this.destRate   = destRate
-  }
-
-  // 64-bit doubles to 64-bit doubles
-
-  transform(chunk, encoding, callback) {
-    bindings.proces_resample_chunk(chunk, this.sourceRate, this.destRate, callback)
-  }
+exports.format = {
+  float32: 'float32',
+  int16:   'int16',
+  int24:   'int24',
+  int32:   'int32'
 }
 
-module.exports = {
-  EncoderStream, DecoderStream, ResampleStream
+exports.channels = {
+  interleaved: 'interleaved',
+  split:       'split'
 }
 
-/// USER CODE -- FROM OUTSIDE THIS MODULE ///
+exports.Resampler = function (options) {
+  options  = options || {}
+  var format   = options.format      || exports.format.int16
+  var channels = options.channels    || exports.channels.interleaved
+  var quality  = options.quality     || exports.quality.high
+  var phase    = options.phase       || exports.phase.linear
+  var numCh    = options.numChannels || 1
 
-const nodesox = require('node-sox')
-
-const input  = fs.createReadStream('./input.wav'),
-      output = fs.createWriteStream('./output.wav')
-
-input
-  .pipe(new nodesox.DecoderStream())
-  .pipe(new nodesox.ResampleStream({sourceReate: 44100, destRate: 192000}))
-  .pipe(new nodesox.EncoderStream({rate: 192000}))
-  .pipe(output)
+  this.soxr    = native.soxr_create(format, channels, quality, phase, numCh)
+  this.process = function (buf, cb) {
+    native.soxr_process(this.soxr, buf, cb)
+  }
+}
