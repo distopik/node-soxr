@@ -1,4 +1,7 @@
-const native = require('bindings')('bindings')
+const native    = require('bindings')('bindings'),
+      stream    = require('stream'),
+      util      = require('util'),
+      Transform = stream.Transform
 
 exports.quality = {
   quick:    'quick',
@@ -27,7 +30,7 @@ exports.channels = {
   split:       'split'
 }
 
-exports.Resampler = function (options) {
+function Resampler(options) {
   options  = options || {}
   var format   = options.format      || exports.format.int16
   var channels = options.channels    || exports.channels.interleaved
@@ -40,3 +43,19 @@ exports.Resampler = function (options) {
     native.soxr_process(this.soxr, buf, cb)
   }
 }
+
+function ResampleStream (options) {
+  if (!(this instanceof ResampleStream))
+    return new ResampleStream(options)
+
+  Transform.call(this, options)
+  this.resampler = new Resampler(options)
+}
+
+util.inherits(ResampleStream, Transform)
+ResampleStream.prototype._transform = function (chunk, encoding, cb) {
+  this.resampler.process(chunk, cb)
+}
+
+exports.ResampleStream = ResampleStream
+exports.Resampler      = Resampler
